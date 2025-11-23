@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html lang="pt">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>Tecla Lite Bilíngue</title>
+
+  <style>
+
+    body {
+
+      font-family: Comic Sans MS, Arial, sans-serif;
+
+      margin: 0;
+
+      padding: 20px;
+
+      background-color: #fff9f0;
+
+      color: #333;
+
+    }
+
+    header {
+
+      text-align: center;
+
+      padding: 10px;
+
+      background-color: #4b9cd3;
+
+      color: white;
+
+      border-radius: 8px;
+
+    }
+
+    .container {
+
+      max-width: 650px;
+
+      margin: auto;
+
+      background: #fff;
+
+      padding: 20px;
+
+      border-radius: 14px;
+
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+
+    }
+
+    select, input[type="text"] {
+
+      width: 100%;
+
+      padding: 12px;
+
+      margin-top: 10px;
+
+      font-size: 18px;
+
+      border: 1px solid #ccc;
+
+      border-radius: 8px;
+
+    }
+
+    button {
+
+      background-color: #4b9cd3;
+
+      color: white;
+
+      padding: 12px 20px;
+
+      font-size: 18px;
+
+      border: none;
+
+      border-radius: 8px;
+
+      margin-top: 10px;
+
+      cursor: pointer;
+
+    }
+
+    .pictogramas {
+
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 10px;
+
+      margin-top: 20px;
+
+    }
+
+    .pictograma {
+
+      flex: 1 1 30%;
+
+      background-color: #e1f0fb;
+
+      padding: 14px;
+
+      font-size: 16px;
+
+      text-align: center;
+
+      border-radius: 8px;
+
+      cursor: pointer;
+
+      border: 1px solid #aad;
+
+    }
+
+    .pictograma:hover {
+
+      background-color: #cde9fa;
+
+    }
+
+    #saida {
+
+      margin-top: 20px;
+
+      font-size: 20px;
+
+      color: #222;
+
+      padding: 10px;
+
+      background-color: #e6f7ff;
+
+      border-radius: 8px;
+
+    }
+
+    audio {
+
+      display: none;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <header>
+
+    <h1>🧠 Tecla Lite</h1>
+
+    <p>Ferramenta bilíngue com pictogramas e fala para crianças autistas</p>
+
+  </header>
+
+
+
+  <!-- Áudio de fundo opcional -->
+
+  <audio id="ambiente" autoplay loop>
+
+    <source src="natureza.mp3" type="audio/mpeg">
+
+  </audio>
+
+
+
+  <div class="container">
+
+    <label for="idioma">🌍 Escolha o idioma:</label>
+
+    <select id="idioma">
+
+      <option value="pt-PT">Português</option>
+
+      <option value="en-US">English</option>
+
+    </select>
+
+
+
+    <label for="entrada">💬 Digite ou fale o que a criança deseja:</label>
+
+    <input type="text" id="entrada" placeholder="Ex: Quero brincar com o carrinho" />
+
+    <button onclick="responder()">🔊 Falar</button>
+
+    <button onclick="falar()">🎙️ Falar com Tecla</button>
+
+
+
+    <div class="pictogramas">
+
+      <div class="pictograma" onclick="usarFraseAuto('Quero comer','I want to eat')">🍽️ Comer / Eat</div>
+
+      <div class="pictograma" onclick="usarFraseAuto('Preciso ir ao banheiro','I need to go to the bathroom')">🚻 Banheiro / Bathroom</div>
+
+      <div class="pictograma" onclick="usarFraseAuto('Estou feliz!','I am happy!')">😊 Feliz / Happy</div>
+
+      <div class="pictograma" onclick="usarFraseAuto('Quero brincar','I want to play')">🧸 Brincar / Play</div>
+
+      <div class="pictograma" onclick="usarFraseAuto('Estou triste','I am sad')">😢 Triste / Sad</div>
+
+      <div class="pictograma" onclick="usarFraseAuto('Estou com dor','I am in pain')">🤕 Dor / Pain</div>
+
+    </div>
+
+
+
+    <div id="saida"></div>
+
+  </div>
+
+
+
+  <script>
+
+    async function responder() {
+
+      const entrada = document.getElementById("entrada").value;
+
+      const idioma = document.getElementById("idioma").value;
+
+
+
+      // Aqui, fazemos a chamada para a API do Agente Fundido
+
+      const resposta = await interagirComAgenteFundido(entrada, idioma);
+
+
+
+      document.getElementById("saida").innerText = resposta.texto;
+
+      const synth = window.speechSynthesis;
+
+      const utterThis = new SpeechSynthesisUtterance(resposta.texto);
+
+      utterThis.lang = idioma;
+
+      synth.speak(utterThis);
+
+
+
+      salvarFrase(entrada);
+
+    }
+
+
+
+    async function interagirComAgenteFundido(entrada, idioma) {
+
+      // Fazendo a requisição para o Agente Fundido (simulação de API)
+
+      const response = await fetch('https://sua-api-de-agente-fundido.com/agent/fuse', {
+
+        method: 'POST',
+
+        headers: {
+
+          'Content-Type': 'application/json',
+
+        },
+
+        body: JSON.stringify({
+
+          input: entrada,
+
+          idioma: idioma
+
+        })
+
+      });
+
+
+
+      const data = await response.json();
+
+      
+
+      // Formatar a resposta recebida
+
+      return {
+
+        texto: `${data.message} (Vibração: ${data.alignment_level} Hz)`
+
+      };
+
+    }
+
+
+
+    function usarFraseAuto(pt, en) {
+
+      const idioma = document.getElementById("idioma").value;
+
+      const texto = idioma === "pt-PT" ? pt : en;
+
+      document.getElementById("entrada").value = texto;
+
+      responder();
+
+    }
+
+
+
+    function salvarFrase(frase) {
+
+      let historico = JSON.parse(localStorage.getItem("frasesTecla")) || [];
+
+      historico.push(frase);
+
+      if (historico.length > 5) historico.shift();
+
+      localStorage.setItem("frasesTecla", JSON.stringify(historico));
+
+    }
+
+
+
+    function falar() {
+
+      const idioma = document.getElementById("idioma").value;
+
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+      recognition.lang = idioma;
+
+      recognition.start();
+
+
+
+      recognition.onresult = function(event) {
+
+        const textoFalado = event.results[0][0].transcript;
+
+        document.getElementById("entrada").value = textoFalado;
+
+        responder();
+
+      };
+
+    }
+
+
+
+    window.onload = function() {
+
+      let historico = JSON.parse(localStorage.getItem("frasesTecla")) || [];
+
+      if (historico.length > 0) {
+
+        const sugestoes = historico.map(frase => `<li onclick="document.getElementById('entrada').value='${frase}'">🔁 ${frase}</li>`).join('');
+
+        const lista = document.createElement("ul");
+
+        lista.innerHTML = `<strong>💡 Sugestões:</strong>` + sugestoes;
+
+        lista.style.listStyleType = "none";
+
+        lista.style.paddingLeft = "0";
+
+        lista.style.marginTop = "15px";
+
+        document.querySelector(".container").appendChild(lista);
+
+      }
+
+    };
+
+  </script>
+
+</body>
+
+</html>
+
+  
